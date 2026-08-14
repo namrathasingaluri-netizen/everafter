@@ -64,6 +64,16 @@ See [`docs/IOS_SETUP.md`](docs/IOS_SETUP.md) for the complete iOS workflow:
 - private photo and video registration;
 - global gallery curation and device-only layout overrides.
 
+### Install and scan magnets on Android
+
+See [`docs/ANDROID_SETUP.md`](docs/ANDROID_SETUP.md) for the complete Android
+workflow:
+
+- physical-device installation and release-signing guidance;
+- foreground NFC scanning by hardware UID;
+- optional NDEF scan-to-open links;
+- magnet binding, deep-link verification, and troubleshooting.
+
 ### Local gallery storage
 
 EverAfter has no backend configuration. The shared baseline for every device is

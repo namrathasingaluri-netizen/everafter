@@ -1,11 +1,16 @@
 import 'dart:io';
 
+import 'package:everafter/services/android_nfc_service.dart';
 import 'package:everafter/services/nfc_configuration.dart';
 import 'package:everafter/services/nfc_service.dart';
 import 'package:everafter/services/ios_nfc_service.dart';
 import 'package:everafter/services/pn532_nfc_service.dart';
 
 NfcService createNfcService() {
+  if (Platform.isAndroid) {
+    return AndroidNfcService();
+  }
+
   if (Platform.isIOS && nativeIosNfcEnabled) {
     return IosNfcService();
   }

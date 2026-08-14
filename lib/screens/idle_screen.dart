@@ -140,23 +140,7 @@ class _IdleScreenState extends ConsumerState<IdleScreen> {
   }
 
   Future<void> _showNfcShortcutSetup() async {
-    final repository = ref.read(tripRepositoryProvider);
-    final links = <({String name, String url})>[];
-    for (final artifact in repository.artifacts) {
-      TripGalleryItem? matchedTrip;
-      for (final trip in tripGalleryItems) {
-        if (trip.name == artifact.place) {
-          matchedTrip = trip;
-          break;
-        }
-      }
-      if (matchedTrip != null) {
-        links.add((
-          name: matchedTrip.name,
-          url: 'everafter:///nfc/${matchedTrip.slug}',
-        ));
-      }
-    }
+    final links = _nfcTripLinks();
 
     await showDialog<void>(
       context: context,
@@ -186,35 +170,7 @@ class _IdleScreenState extends ConsumerState<IdleScreen> {
                   'with the matching EverAfter link below.',
                 ),
                 const SizedBox(height: 18),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: links.length,
-                    separatorBuilder: (_, _) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final link = links[index];
-                      return ListTile(
-                        dense: true,
-                        title: Text(link.name),
-                        subtitle: Text(link.url),
-                        trailing: const Icon(Icons.copy, size: 18),
-                        onTap: () async {
-                          await Clipboard.setData(
-                            ClipboardData(text: link.url),
-                          );
-                          if (!dialogContext.mounted) return;
-                          ScaffoldMessenger.of(dialogContext)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
-                              SnackBar(
-                                content: Text('${link.name} link copied'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                        },
-                      );
-                    },
-                  ),
-                ),
+                Expanded(child: _nfcLinkList(dialogContext, links)),
                 const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerRight,
@@ -231,10 +187,124 @@ class _IdleScreenState extends ConsumerState<IdleScreen> {
     );
   }
 
+  Future<void> _showAndroidNfcSetup() async {
+    final links = _nfcTripLinks();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: EverAfterColors.paper,
+        child: SizedBox(
+          width: 760,
+          height: 690,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(30, 26, 30, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'ANDROID NFC SETUP',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Scan magnets on Android',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Turn on NFC in Android Settings. In EverAfter, tap Scan '
+                  'Magnet and hold the NFC area on the back of the phone near '
+                  'one magnet. EverAfter reads its UID and opens the linked trip.',
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'OPTIONAL · SCAN TO OPEN',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'For a writable magnet tag, use an NFC tag-writing app to '
+                  'save the matching link below as its first NDEF URI record. '
+                  'Scanning that tag while the phone is unlocked can open the '
+                  'trip directly. Copying a link does not change the tag.',
+                ),
+                const SizedBox(height: 14),
+                Expanded(child: _nfcLinkList(dialogContext, links)),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: const Text('DONE'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<({String name, String url})> _nfcTripLinks() {
+    final repository = ref.read(tripRepositoryProvider);
+    final links = <({String name, String url})>[];
+    for (final artifact in repository.artifacts) {
+      TripGalleryItem? matchedTrip;
+      for (final trip in tripGalleryItems) {
+        if (trip.name == artifact.place) {
+          matchedTrip = trip;
+          break;
+        }
+      }
+      if (matchedTrip != null) {
+        links.add((
+          name: matchedTrip.name,
+          url: 'everafter:///nfc/${matchedTrip.slug}',
+        ));
+      }
+    }
+    return links;
+  }
+
+  Widget _nfcLinkList(
+    BuildContext dialogContext,
+    List<({String name, String url})> links,
+  ) {
+    return ListView.separated(
+      itemCount: links.length,
+      separatorBuilder: (_, _) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final link = links[index];
+        return ListTile(
+          dense: true,
+          title: Text(link.name),
+          subtitle: Text(link.url),
+          trailing: const Icon(Icons.copy, size: 18),
+          onTap: () async {
+            await Clipboard.setData(ClipboardData(text: link.url));
+            if (!dialogContext.mounted) return;
+            ScaffoldMessenger.of(dialogContext)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text('${link.name} link copied'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isIos = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    final isAndroid =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     final isScanning = ref.watch(
       museumControllerProvider.select((museum) => museum.isScanning),
     );
@@ -269,7 +339,26 @@ class _IdleScreenState extends ConsumerState<IdleScreen> {
                   visualDensity: VisualDensity.compact,
                 ),
                 const SizedBox(width: 14),
-                if (isIos && nativeIosNfcEnabled)
+                if (isAndroid) ...<Widget>[
+                  OutlinedButton.icon(
+                    key: const ValueKey('android-nfc-setup'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: EverAfterColors.burgundy,
+                      side: BorderSide(
+                        color: EverAfterColors.burgundy.withValues(alpha: 0.55),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 11,
+                      ),
+                    ),
+                    onPressed: _showAndroidNfcSetup,
+                    icon: const Icon(Icons.help_outline, size: 18),
+                    label: const Text('SETUP'),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+                if ((isIos && nativeIosNfcEnabled) || isAndroid)
                   FilledButton.icon(
                     key: const ValueKey('scan-magnet'),
                     style: FilledButton.styleFrom(
