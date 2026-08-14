@@ -154,6 +154,20 @@ ignored local archive is entering Git.
 The local data and device-access model is documented in
 [`docs/SECURITY.md`](docs/SECURITY.md).
 
+## License
+
+EverAfter's source code is available under the
+[PolyForm Noncommercial License 1.0.0](LICENSE). Personal, educational, hobby,
+charitable, and other noncommercial uses are permitted under its terms,
+including modification and noncommercial distribution. Commercial use —
+including selling or monetizing an app based on EverAfter — requires prior
+permission from the copyright holder.
+
+Because the license restricts commercial use, EverAfter is source-available
+rather than OSI-approved open-source software. Third-party dependencies and
+assets remain subject to their own licenses; bundled asset notices are retained
+in [`assets/licenses/`](assets/licenses/).
+
 ## NFC integration point
 
 The app uses `DemoNfcService` by default. On Linux, setting
