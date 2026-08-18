@@ -64,6 +64,11 @@ See [`docs/IOS_SETUP.md`](docs/IOS_SETUP.md) for the complete iOS workflow:
 - private photo and video registration;
 - global gallery curation and device-only layout overrides.
 
+For a prompt-by-prompt assisted workflow, see
+[`docs/CODEX_SETUP.md`](docs/CODEX_SETUP.md). It covers repository inspection,
+private-media registration, gallery validation, iPhone installation, and the
+manual physical-device checks that Codex cannot replace.
+
 ### Install and scan magnets on Android
 
 See [`docs/ANDROID_SETUP.md`](docs/ANDROID_SETUP.md) for the complete Android

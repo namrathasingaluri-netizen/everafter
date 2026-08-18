@@ -4,6 +4,9 @@ This guide starts with the public demo, installs a private build on an iPhone,
 and explains how to replace the demo content with your own trips. EverAfter is
 local-first: it has no account, backend, media upload, or automatic sync.
 
+If you want Codex to help inspect, edit, validate, and install the local
+checkout, follow [`CODEX_SETUP.md`](CODEX_SETUP.md) alongside this guide.
+
 ## 1. Choose the iPhone NFC mode
 
 EverAfter supports two iPhone workflows:
