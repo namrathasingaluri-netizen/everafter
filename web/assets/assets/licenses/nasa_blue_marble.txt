@@ -1,0 +1,9 @@
+Earth surface texture: NASA Visible Earth, “The Blue Marble: Land Surface,
+Ocean Color and Sea Ice”. NASA imagery is used here as a public-domain
+museum visualization asset.
+
+Source:
+https://visibleearth.nasa.gov/images/57730/the-blue-marble-land-surface-ocean-color-and-sea-ice
+
+Downloaded asset:
+https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57730/land_ocean_ice_2048.png
